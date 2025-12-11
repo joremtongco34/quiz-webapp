@@ -10,8 +10,11 @@ import { getQuizQuestions } from '../../../lib/services/quizService';
 import QuestionDisplay from '../../../components/QuestionDisplay';
 import RankingsDisplay from '../../../components/RankingsDisplay';
 import Timer from '../../../components/Timer';
+import { useTheme } from '../../../lib/contexts/ThemeContext';
+import { themeClasses } from '../../../lib/utils/theme';
 
 export default function ParticipantQuizPage() {
+  const theme = useTheme();
   const params = useParams();
   const router = useRouter();
   const code = params.code as string;
@@ -180,15 +183,19 @@ export default function ParticipantQuizPage() {
 
   if (quizLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Loading quiz...</div>
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
+        <div className={theme === 'flat' ? 'text-gray-600' : 'text-slate-600'}>Loading quiz...</div>
       </div>
     );
   }
 
   if (!quiz) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
         <div className="text-red-500">Quiz not found</div>
       </div>
     );
@@ -197,13 +204,25 @@ export default function ParticipantQuizPage() {
   // Join screen
   if (!participantId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-3xl font-semibold text-center mb-2 text-gray-800">Join Quiz</h1>
-          <p className="text-center text-gray-500 mb-8">Code: <span className="font-mono font-semibold text-indigo-600">{code}</span></p>
+      <div className={`min-h-screen flex items-center justify-center p-4 ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
+        <div className={`max-w-md w-full ${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-8`}>
+          <h1 className={`text-3xl font-semibold text-center mb-2 ${
+            theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+          }`}>Join Quiz</h1>
+          <p className={`text-center mb-8 ${
+            theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+          }`}>Code: <span className={`font-mono font-semibold ${
+            theme === 'flat' ? 'text-blue-600' : 'text-indigo-600'
+          }`}>{code}</span></p>
 
           {quiz.status !== 'waiting' && (
-            <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm mb-6">
+            <div className={`p-4 rounded-xl text-sm mb-6 ${
+              theme === 'flat' 
+                ? 'bg-red-50 border border-red-100 text-red-600' 
+                : 'bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 text-red-700'
+            }`}>
               This quiz has already started. You cannot join.
             </div>
           )}
@@ -212,7 +231,9 @@ export default function ParticipantQuizPage() {
             <div>
               <label
                 htmlFor="participantName"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className={`block text-sm font-medium mb-2 ${
+                  theme === 'flat' ? 'text-gray-700' : 'text-slate-700'
+                }`}
               >
                 Your Name
               </label>
@@ -222,13 +243,17 @@ export default function ParticipantQuizPage() {
                 value={participantName}
                 onChange={(e) => setParticipantName(e.target.value)}
                 placeholder="Enter your name"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-gray-50 focus:bg-white"
+                className={`w-full px-4 py-3 border ${themeClasses.input(theme)} ${themeClasses.rounded(theme)} transition-all focus:bg-white`}
                 disabled={joining || quiz.status !== 'waiting'}
               />
             </div>
 
             {joinError && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+              <div className={`p-4 rounded-xl text-sm ${
+                theme === 'flat' 
+                  ? 'bg-red-50 border border-red-100 text-red-600' 
+                  : 'bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 text-red-700'
+              }`}>
                 {joinError}
               </div>
             )}
@@ -236,7 +261,9 @@ export default function ParticipantQuizPage() {
             <button
               type="submit"
               disabled={joining || quiz.status !== 'waiting'}
-              className="w-full py-3 px-6 bg-indigo-500 text-white rounded-xl font-medium hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+              className={`w-full py-3 px-6 ${themeClasses.btnPrimary(theme)} ${themeClasses.rounded(theme)} font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ${
+                theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-lg hover:shadow-xl'
+              }`}
             >
               {joining ? 'Joining...' : 'Join Quiz'}
             </button>
@@ -257,13 +284,21 @@ export default function ParticipantQuizPage() {
   // Waiting screen
   if (quiz.status === 'waiting') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-10 text-center">
-          <h1 className="text-2xl font-semibold mb-4 text-gray-800">Waiting for Quiz to Start</h1>
-          <p className="text-gray-600 mb-6">
-            You've joined as: <span className="font-semibold text-indigo-600">{participantName}</span>
+      <div className={`min-h-screen flex items-center justify-center p-4 ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
+        <div className={`max-w-md w-full ${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-10 text-center`}>
+          <h1 className={`text-2xl font-semibold mb-4 ${
+            theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+          }`}>Waiting for Quiz to Start</h1>
+          <p className={`mb-6 ${
+            theme === 'flat' ? 'text-gray-600' : 'text-slate-600'
+          }`}>
+            You've joined as: <span className={`font-semibold ${
+              theme === 'flat' ? 'text-blue-600' : 'text-indigo-600'
+            }`}>{participantName}</span>
           </p>
-          <p className="text-gray-500">The host will start the quiz soon...</p>
+          <p className={theme === 'flat' ? 'text-gray-500' : 'text-slate-500'}>The host will start the quiz soon...</p>
         </div>
       </div>
     );
@@ -274,14 +309,22 @@ export default function ParticipantQuizPage() {
     // Show leaderboard only when timer expires
     if (timerExpired) {
       return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className={`min-h-screen p-4 ${
+          theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+        }`}>
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-sm p-10">
+            <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-10`}>
               <div className="text-center mb-8">
-                <div className="inline-block px-6 py-3 bg-red-50 border border-red-200 rounded-xl mb-4">
-                  <p className="text-red-700 font-semibold text-lg">⏰ Time's Up!</p>
+                <div className={`inline-block px-6 py-3 rounded-xl mb-4 ${
+                  theme === 'flat' 
+                    ? 'bg-red-50 border border-red-200' 
+                    : 'bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200'
+                }`}>
+                  <p className={`font-semibold text-lg ${
+                    theme === 'flat' ? 'text-red-700' : 'text-red-600'
+                  }`}>⏰ Time's Up!</p>
                 </div>
-                <p className="text-gray-600">
+                <p className={theme === 'flat' ? 'text-gray-600' : 'text-slate-600'}>
                   Question {participantQuestionIndex + 1} of {quizQuestions.length}
                 </p>
               </div>
@@ -298,10 +341,14 @@ export default function ParticipantQuizPage() {
     // All questions completed
     if (participantQuestionIndex >= quizQuestions.length) {
       return (
-        <div className="min-h-screen bg-gray-50 p-4">
+        <div className={`min-h-screen p-4 ${
+          theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+        }`}>
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-sm p-10">
-              <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">Quiz Completed!</h2>
+            <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-10`}>
+              <h2 className={`text-2xl font-semibold mb-8 text-center ${
+                theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+              }`}>Quiz Completed!</h2>
               <RankingsDisplay 
                 participants={participants} 
                 maxParticipants={participants.length > 3 ? 3 : undefined}
@@ -314,31 +361,43 @@ export default function ParticipantQuizPage() {
 
     if (!currentQuestion) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-gray-600">Loading question...</div>
+        <div className={`min-h-screen flex items-center justify-center ${
+          theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+        }`}>
+          <div className={theme === 'flat' ? 'text-gray-600' : 'text-slate-600'}>Loading question...</div>
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
+      <div className={`min-h-screen p-2 sm:p-4 ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
         <div className="max-w-6xl mx-auto">
           {/* Overall Quiz Timer at Top */}
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 mb-4 sm:mb-6`}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1">Quiz: {code}</h1>
-                <p className="text-gray-600 text-xs sm:text-sm">Participant: {participantName}</p>
+                <h1 className={`text-xl sm:text-2xl font-semibold mb-1 ${
+                  theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+                }`}>Quiz: {code}</h1>
+                <p className={`text-xs sm:text-sm ${
+                  theme === 'flat' ? 'text-gray-600' : 'text-slate-600'
+                }`}>Participant: {participantName}</p>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
                 <div className="text-center w-full sm:w-auto">
-                  <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Overall Quiz Time</p>
-                  <span className="text-xl sm:text-2xl font-semibold text-gray-700">
+                  <p className={`text-xs mb-2 uppercase tracking-wide ${
+                    theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+                  }`}>Overall Quiz Time</p>
+                  <span className={`text-xl sm:text-2xl font-semibold ${
+                    theme === 'flat' ? 'text-gray-700' : 'text-slate-700'
+                  }`}>
                     {Math.floor(overallTimeRemaining / 60)}:{(overallTimeRemaining % 60).toString().padStart(2, '0')}
                   </span>
                 </div>
                 <div className="text-left sm:text-right w-full sm:w-auto">
-                  <div className="inline-block px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium">
+                  <div className={`inline-block px-3 sm:px-4 py-2 ${themeClasses.badge(theme)} ${themeClasses.rounded(theme)} text-xs sm:text-sm font-medium`}>
                     Score: {participants.find((p) => p.id === participantId)?.score || 0}
                   </div>
                 </div>
@@ -349,7 +408,7 @@ export default function ParticipantQuizPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Main Content */}
             <div className="lg:col-span-2 order-2 lg:order-1">
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 lg:p-8">
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 lg:p-8`}>
                 <QuestionDisplay
                   question={currentQuestion}
                   questionNumber={participantQuestionIndex + 1}
@@ -364,7 +423,9 @@ export default function ParticipantQuizPage() {
 
                 {selectedAnswer && !answerSubmitted && !timerExpired && (
                   <div className="mt-6 sm:mt-8 text-center">
-                    <p className="text-xs sm:text-sm text-gray-500 mb-4">
+                    <p className={`text-xs sm:text-sm mb-4 ${
+                      theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+                    }`}>
                       Answer selected. Click "Next Question" to submit and continue.
                     </p>
                   </div>
@@ -376,7 +437,13 @@ export default function ParticipantQuizPage() {
                     {!isFirstQuestion && (
                       <button
                         onClick={handlePreviousQuestion}
-                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gray-500 text-white rounded-lg sm:rounded-xl font-medium text-sm sm:text-base hover:bg-gray-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 ${
+                          theme === 'flat' 
+                            ? 'bg-gray-500 hover:bg-gray-600' 
+                            : 'bg-gradient-to-r from-gray-400 to-slate-500 hover:from-gray-500 hover:to-slate-600'
+                        } text-white ${themeClasses.rounded(theme)} font-medium text-sm sm:text-base transition-all duration-200 ${
+                          theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-md hover:shadow-lg'
+                        }`}
                       >
                         ← Previous
                       </button>
@@ -384,13 +451,17 @@ export default function ParticipantQuizPage() {
                     {!isLastQuestion && (
                       <button
                         onClick={handleNextQuestion}
-                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-indigo-500 text-white rounded-lg sm:rounded-xl font-medium text-sm sm:text-base hover:bg-indigo-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                        className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 ${themeClasses.btnPrimary(theme)} ${themeClasses.rounded(theme)} font-medium text-sm sm:text-base transition-all duration-200 ${
+                          theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-lg hover:shadow-xl'
+                        }`}
                       >
                         Next Question →
                       </button>
                     )}
                     {isLastQuestion && answeredQuestions.has(participantQuestionIndex) && (
-                      <div className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 text-gray-600 rounded-lg sm:rounded-xl font-medium text-sm sm:text-base text-center">
+                      <div className={`w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 ${
+                        theme === 'flat' ? 'bg-gray-100 text-gray-600' : 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700'
+                      } ${themeClasses.rounded(theme)} font-medium text-sm sm:text-base text-center`}>
                         All Questions Answered
                       </div>
                     )}
@@ -401,7 +472,7 @@ export default function ParticipantQuizPage() {
 
             {/* Sidebar - Leaderboard */}
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 sticky top-2 sm:top-4">
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 sticky top-2 sm:top-4`}>
                 <RankingsDisplay 
                   participants={participants} 
                   maxParticipants={participants.length > 3 ? 3 : undefined}
@@ -416,13 +487,19 @@ export default function ParticipantQuizPage() {
 
   // Between questions or completed - show rankings
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className={`min-h-screen p-4 ${
+      theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+    }`}>
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm p-10">
+        <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-10`}>
           {quiz.status === 'completed' ? (
-            <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">Quiz Completed!</h2>
+            <h2 className={`text-2xl font-semibold mb-8 text-center ${
+              theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+            }`}>Quiz Completed!</h2>
           ) : (
-            <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">Current Rankings</h2>
+            <h2 className={`text-2xl font-semibold mb-8 text-center ${
+              theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+            }`}>Current Rankings</h2>
           )}
           <RankingsDisplay 
             participants={participants} 
@@ -430,7 +507,9 @@ export default function ParticipantQuizPage() {
           />
           {quiz.status === 'completed' && (
             <div className="mt-8 text-center">
-              <p className="text-lg text-gray-600">
+              <p className={`text-lg ${
+                theme === 'flat' ? 'text-gray-600' : 'text-slate-600'
+              }`}>
                 🎉 Congratulations to the winners! 🎉
               </p>
             </div>

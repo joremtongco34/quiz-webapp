@@ -8,8 +8,11 @@ import { useParticipantsRealtime } from '../../../lib/hooks/useParticipantsRealt
 import { startQuiz, nextQuestion, completeQuiz, getRankings, getQuizQuestions } from '../../../lib/services/quizService';
 import RankingsDisplay from '../../../components/RankingsDisplay';
 import QuestionDisplay from '../../../components/QuestionDisplay';
+import { useTheme } from '../../../lib/contexts/ThemeContext';
+import { themeClasses } from '../../../lib/utils/theme';
 
 export default function HostQuizPage() {
+  const theme = useTheme();
   const params = useParams();
   const router = useRouter();
   const code = params.code as string;
@@ -129,40 +132,54 @@ export default function HostQuizPage() {
 
   if (quizLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-600">Loading quiz...</div>
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
+        <div className={theme === 'flat' ? 'text-gray-600' : 'text-slate-600'}>Loading quiz...</div>
       </div>
     );
   }
 
   if (!quiz) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+      }`}>
         <div className="text-red-500">Quiz not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
+    <div className={`min-h-screen p-2 sm:p-4 ${
+      theme === 'flat' ? 'bg-gray-100' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
+    }`}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 mb-4 sm:mb-6`}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1">Quiz: {code}</h1>
-              <p className="text-gray-600 text-xs sm:text-sm">Host: {quiz.host_name}</p>
+              <h1 className={`text-xl sm:text-2xl font-semibold mb-1 ${
+                theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+              }`}>Quiz: {code}</h1>
+              <p className={`text-xs sm:text-sm ${
+                theme === 'flat' ? 'text-gray-600' : 'text-slate-600'
+              }`}>Host: {quiz.host_name}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
-              <div className="inline-block px-3 sm:px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium">
+              <div className={`inline-block px-3 sm:px-4 py-2 ${themeClasses.badge(theme)} ${themeClasses.rounded(theme)} text-xs sm:text-sm font-medium`}>
                 {participants.length} {participants.length === 1 ? 'participant' : 'participants'}
               </div>
               <button
                 onClick={handleCopyUrl}
-                className={`px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all duration-200 shadow-sm hover:shadow-md ${
+                className={`px-3 sm:px-4 py-2 ${themeClasses.rounded(theme)} font-medium text-xs sm:text-sm transition-all duration-200 ${
+                  theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-md hover:shadow-lg'
+                } ${
                   copied
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? themeClasses.btnSuccess(theme)
+                    : theme === 'flat'
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      : 'bg-gradient-to-r from-gray-100 to-slate-100 text-slate-700 hover:from-gray-200 hover:to-slate-200'
                 }`}
                 title="Copy participant URL"
               >
@@ -192,17 +209,21 @@ export default function HostQuizPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Main Content - Leaderboard */}
             <div className="lg:col-span-2 order-2 lg:order-1">
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 lg:p-10">
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 lg:p-10`}>
                 <RankingsDisplay participants={participants} />
               </div>
             </div>
 
             {/* Sidebar - Timer */}
             <div className="lg:col-span-1 order-1 lg:order-2">
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 sticky top-2 sm:top-4">
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 sticky top-2 sm:top-4`}>
                 <div className="text-center">
-                  <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 uppercase tracking-wide">Overall Quiz Time</p>
-                  <span className="text-2xl sm:text-3xl font-semibold text-gray-700">
+                  <p className={`text-xs sm:text-sm mb-3 sm:mb-4 uppercase tracking-wide ${
+                    theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+                  }`}>Overall Quiz Time</p>
+                  <span className={`text-2xl sm:text-3xl font-semibold ${
+                    theme === 'flat' ? 'text-gray-700' : 'text-slate-700'
+                  }`}>
                     {Math.floor(overallTimeRemaining / 60)}:{(overallTimeRemaining % 60).toString().padStart(2, '0')}
                   </span>
                 </div>
@@ -214,14 +235,20 @@ export default function HostQuizPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {quiz.status === 'waiting' && (
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10 text-center">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-800">Waiting for Participants</h2>
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-6 sm:p-8 lg:p-10 text-center`}>
+                <h2 className={`text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 ${
+                  theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+                }`}>Waiting for Participants</h2>
                 
                 {/* Quiz Code */}
                 <div className="mb-4 sm:mb-6">
-                  <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">Quiz Code:</p>
-                  <div className="inline-block px-4 sm:px-6 py-3 sm:py-4 bg-indigo-50 rounded-lg sm:rounded-xl">
-                    <span className="font-mono font-semibold text-2xl sm:text-3xl text-indigo-600">{code}</span>
+                  <p className={`text-xs sm:text-sm mb-2 sm:mb-3 ${
+                    theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+                  }`}>Quiz Code:</p>
+                  <div className={`inline-block px-4 sm:px-6 py-3 sm:py-4 ${themeClasses.badge(theme)} ${themeClasses.rounded(theme)}`}>
+                    <span className={`font-mono font-semibold text-2xl sm:text-3xl ${
+                      theme === 'flat' ? 'text-blue-600' : 'text-indigo-600'
+                    }`}>{code}</span>
                   </div>
                 </div>
 
@@ -230,8 +257,12 @@ export default function HostQuizPage() {
                   {/* QR Code */}
                   {participantUrl && (
                     <div className="flex flex-col items-center mb-4 sm:mb-6">
-                      <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3">Scan this QR code to join:</p>
-                      <div className="p-3 sm:p-4 bg-white border-2 border-gray-200 rounded-lg sm:rounded-xl inline-block">
+                      <p className={`text-xs sm:text-sm mb-2 sm:mb-3 ${
+                        theme === 'flat' ? 'text-gray-500' : 'text-slate-500'
+                      }`}>Scan this QR code to join:</p>
+                      <div className={`p-3 sm:p-4 ${themeClasses.bgPrimary(theme)} border-2 ${
+                        theme === 'flat' ? 'border-gray-200' : 'border-indigo-200'
+                      } ${themeClasses.rounded(theme)} inline-block`}>
                         <div className="scale-80 sm:scale-100">
                           <QRCodeSVG
                             value={participantUrl}
@@ -248,10 +279,12 @@ export default function HostQuizPage() {
                   <div className="flex justify-center">
                     <button
                       onClick={handleCopyUrl}
-                      className={`px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium text-sm sm:text-base transition-all duration-200 shadow-sm hover:shadow-md ${
+                      className={`px-4 sm:px-6 py-2 sm:py-3 ${themeClasses.rounded(theme)} font-medium text-sm sm:text-base transition-all duration-200 ${
+                        theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-lg hover:shadow-xl'
+                      } ${
                         copied
-                          ? 'bg-green-500 text-white'
-                          : 'bg-indigo-500 text-white hover:bg-indigo-600'
+                          ? themeClasses.btnSuccess(theme)
+                          : themeClasses.btnPrimary(theme)
                       }`}
                     >
                       {copied ? (
@@ -276,7 +309,9 @@ export default function HostQuizPage() {
                 <button
                   onClick={handleStartQuiz}
                   disabled={actionLoading || participants.length === 0}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 bg-green-500 text-white rounded-lg sm:rounded-xl font-medium text-sm sm:text-base hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                  className={`w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-3 ${themeClasses.btnSuccess(theme)} ${themeClasses.rounded(theme)} font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ${
+                    theme === 'flat' ? 'shadow-sm hover:shadow-md' : 'shadow-lg hover:shadow-xl'
+                  }`}
                 >
                   {actionLoading ? 'Starting...' : 'Start Quiz'}
                 </button>
@@ -284,8 +319,10 @@ export default function HostQuizPage() {
             )}
 
             {quiz.status === 'completed' && (
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-6 sm:p-8 lg:p-10">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 text-center text-gray-800">Quiz Completed!</h2>
+              <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-6 sm:p-8 lg:p-10`}>
+                <h2 className={`text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 text-center ${
+                  theme === 'flat' ? 'text-gray-800' : 'text-slate-800'
+                }`}>Quiz Completed!</h2>
                 <RankingsDisplay participants={participants} />
               </div>
             )}
@@ -293,7 +330,7 @@ export default function HostQuizPage() {
 
           {/* Sidebar - Rankings */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 sticky top-2 sm:top-4">
+            <div className={`${themeClasses.bgPrimary(theme)} ${themeClasses.roundedLarge(theme)} ${themeClasses.cardShadow(theme)} p-4 sm:p-6 sticky top-2 sm:top-4`}>
               <RankingsDisplay participants={participants} />
             </div>
           </div>

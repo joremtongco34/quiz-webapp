@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:flat": "cross-env NEXT_PUBLIC_DESIGN_THEME=flat PORT=3001 next dev",
+    "dev:colorful": "cross-env NEXT_PUBLIC_DESIGN_THEME=colorful PORT=3002 next dev",
+    "kill-ports": "lsof -ti:3001,3002 | xargs kill -9 2>/dev/null || echo 'No processes to kill'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -20,6 +23,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
+    "cross-env": "^10.1.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "postcss": "^8.4.38",
