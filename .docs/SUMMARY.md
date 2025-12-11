@@ -12,11 +12,12 @@ A real-time quiz application built with Next.js and Supabase, allowing hosts to 
   - QR code generation for easy mobile scanning
   - Copy quiz URL functionality for easy sharing with participants
 - **Quiz Management**: 
-  - View real-time leaderboard and overall quiz timer when quiz is in progress
+  - View real-time leaderboard (shows all participants) and overall quiz timer when quiz is in progress
   - Control quiz progression (start quiz, move to next question)
   - See participant count and manage quiz state
 - **Random Questions**: Each quiz randomly selects at least 10 questions from a pool of 15+ questions
 - **Clean Interface**: When quiz is in progress, host sees only leaderboard and timer (no question details)
+- **Full Leaderboard Access**: Host can see all participants, not limited to top 3
     
 ### Participant Features
 - **Join Quiz**: Participants join using a unique quiz code or by scanning QR code
@@ -29,6 +30,8 @@ A real-time quiz application built with Next.js and Supabase, allowing hosts to 
   - Position ranking (1st: 100pts, 2nd: 50pts, 3rd: 25pts, adjusted by speed)
 - **Timer Expiry**: When per-question timer expires, UI switches to leaderboard-only view
 - **Live Leaderboard**: Real-time updates of participant rankings displayed in sidebar
+  - Shows top 3 participants when there are more than 3 participants
+  - Shows all participants when there are 3 or fewer
 - **Mobile Responsive**: Fully optimized for mobile, tablet, and desktop devices
 
 ## Architecture
@@ -82,7 +85,7 @@ webapp/
 - `status` (Text) - 'waiting', 'in_progress', 'completed'
 - `current_question_index` (Integer) - Host's current question index
 - `question_indices` (Integer[]) - Array of selected question indices
-- `timer_seconds` (Integer) - Timer duration per question (default: 30)
+- `timer_seconds` (Integer) - Total quiz duration in seconds (default: 30)
 - `started_at` (Timestamp, Nullable) - When quiz was started (for overall timer calculation)
 - `created_at` (Timestamp)
 - `updated_at` (Timestamp)
@@ -205,28 +208,35 @@ webapp/
 - Updates in real-time
 - Mobile responsive with appropriate text sizing and spacing
 - Handles long participant names with text truncation
+- Supports `maxParticipants` prop to limit displayed participants
+- Shows "Showing top N" message when participants are limited
+- **Host view**: Shows all participants (no limit)
+- **Participant view**: Shows top 3 when there are more than 3 participants
 
 ### Timer
 - Visual countdown with circular progress indicator
 - Changes color when time is low (red when ≤10 seconds)
 - Triggers completion callback when timer reaches 0
 - Supports custom sizing via className prop
-- Used for both per-question and overall quiz timers
+- Used for per-question timer (hidden from participant view during quiz)
 
 ## Timer System
 
 ### Overall Quiz Timer
-- Calculated as: `timer_seconds × total_questions`
+- **Duration**: Uses `timer_seconds` directly (the value entered during quiz creation)
+  - Example: If host sets 30 seconds, the quiz has 30 seconds total (not per question)
 - Starts when quiz status changes to 'in_progress'
 - Updates every second based on `started_at` timestamp
-- Displayed prominently at the top of participant view
-- Shows in MM:SS format with circular progress indicator
+- Displayed prominently at the top of participant view and in host sidebar
+- Shows in MM:SS format (e.g., "7:19" for 439 seconds)
+- No duplicate display - single time format shown
 
 ### Per-Question Timer
 - Hidden from participant view (still functional for auto-submit)
 - Visible in host view during waiting phase
-- Counts down from configured `timer_seconds`
+- Counts down from configured `timer_seconds` (same value as overall timer)
 - Auto-submits answer when timer expires
+- Note: The `timer_seconds` value represents total quiz time, not per-question time
 
 ## Configuration
 
@@ -314,11 +324,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### Latest Features (2024)
 - ✅ QR code generation for easy quiz sharing
-- ✅ Overall quiz timer (replaces per-question timer in UI)
+- ✅ Overall quiz timer system:
+  - Timer value entered during creation is the total quiz duration (not per question)
+  - Single MM:SS format display (no duplicate timers)
+  - Shown at top of participant view and in host sidebar
 - ✅ Mobile-responsive design across all pages
 - ✅ Simplified host view (leaderboard + timer only when quiz in progress)
 - ✅ Enhanced participant view with overall timer at top
-- ✅ Improved RankingsDisplay component with mobile optimization
+- ✅ Improved RankingsDisplay component:
+  - Mobile optimization
+  - Top 3 limit for participants (when more than 3 participants)
+  - Full leaderboard for host view
 - ✅ Responsive QuestionDisplay component
 - ✅ Touch-friendly buttons and navigation
 
@@ -345,3 +361,5 @@ Potential improvements:
 - QR codes use high error correction level (H) for reliability
 - Mobile-first responsive design ensures great experience on all devices
 - Host interface is intentionally minimal during quiz to reduce distractions
+- Leaderboard visibility differs: Host sees all participants, participants see top 3 (when applicable)
+- Timer system: The `timer_seconds` value represents total quiz duration, not per-question time
